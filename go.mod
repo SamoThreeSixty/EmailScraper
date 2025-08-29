@@ -1,3 +1,3 @@
-module github.com/samothreesixty/email-scraper
+module github.com/samothreesixty/EmailScraper
 
 go 1.25.0
