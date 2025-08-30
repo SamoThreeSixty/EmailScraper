@@ -4,3 +4,11 @@ The task of this is to make a flexable microservice that can connect via IMAP to
 The contents will be downloaded to sql, and the attachments will be saved to local files if they are not a security threat.
 
 This service can then be used within other applications to provide an interface where emails can be displayed.
+
+## Tasks
+
+- [x] Create a service that can connect to an email service
+- [x] Periodically scrape for new emails
+- [x] Download attachments
+- [ ] Check for security threats
+- [ ] API for displaying emails
