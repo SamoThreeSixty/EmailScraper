@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	filepath2 "path/filepath"
+	"strings"
 	"time"
 
 	"github.com/emersion/go-imap"
@@ -38,6 +39,10 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 		if err != nil {
 			fmt.Println("Search error:", err)
 			continue
+		}
+
+		if len(ids) == 0 {
+			continue // skip fetch entirely
 		}
 
 		fmt.Println("Found", len(ids), "new emails")
@@ -88,12 +93,14 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 
 				// Save the attachments
 				for _, att := range env.Attachments {
-					saveAttachments(query, email, att, cx)
+					_, _ = saveAttachments(query, email, att, cx)
 				}
 
 				// Save the inline attachments
 				for _, att := range env.Inlines {
-					saveAttachments(query, email, att, cx)
+					contentId, filename := saveAttachments(query, email, att, cx)
+
+					body = strings.ReplaceAll(body, "cid:"+contentId, "attachments/"+filename)
 				}
 
 			}
@@ -107,7 +114,7 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 	}
 }
 
-func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx context.Context) {
+func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx context.Context) (contentId, fileName string) {
 	filePath := filepath2.Join(attachmentDir, att.FileName)
 	err := os.WriteFile(filePath, att.Content, 0644)
 	if err != nil {
@@ -125,4 +132,6 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 	} else {
 		fmt.Println("Attachment saved at:", absPath)
 	}
+
+	return att.ContentID, att.FileName
 }

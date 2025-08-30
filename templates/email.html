@@ -1,1 +1,23 @@
-{{.BodyHtml}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{.Email.Subject}}</title>
+</head>
+<body>
+<h1>{{.Email.Subject}}</h1>
+<p><strong>From:</strong> {{.Email.FromEmail}}</p>
+<p><strong>To:</strong> {{.Email.ToEmail}}</p>
+<p><strong>Date:</strong> {{.Email.DateSent}}</p>
+<hr>
+<div>{{.BodyHtml}}</div>
+<hr>
+<h2>Attachments</h2>
+<ul>
+    {{range .Attachments}}
+    <li><a href="/attachments/{{.Filename}}" target="_blank">{{.Filename}}</a> ({{.Type}})</li>
+    {{else}}
+    <li>No attachments</li>
+    {{end}}
+</ul>
+</body>
+</html>
