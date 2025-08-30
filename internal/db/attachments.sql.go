@@ -9,6 +9,39 @@ import (
 	"context"
 )
 
+const getEmailAttachments = `-- name: GetEmailAttachments :many
+SELECT id, email_id, type, filename, path FROM attachments WHERE email_id = $1
+`
+
+func (q *Queries) GetEmailAttachments(ctx context.Context, emailID int32) ([]Attachment, error) {
+	rows, err := q.db.QueryContext(ctx, getEmailAttachments, emailID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Attachment
+	for rows.Next() {
+		var i Attachment
+		if err := rows.Scan(
+			&i.ID,
+			&i.EmailID,
+			&i.Type,
+			&i.Filename,
+			&i.Path,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const saveAttachment = `-- name: SaveAttachment :one
 INSERT INTO attachments (email_id, type, filename, path)
 VALUES ($1, $2, $3, $4)
