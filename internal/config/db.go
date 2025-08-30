@@ -3,21 +3,27 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"os"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/samothreesixty/EmailScraper/internal/db"
 )
 
-type DatabaseConfig struct {
-	Host string
-	Port string
-	User string
-	Pass string
-	DB   string
-}
+func Connect() (*db.Queries, error) {
+	err := godotenv.Load(".env")
+	if err != nil {
+		return nil, err
+	}
 
-func Connect() (*sql.DB, error) {
-	dsn := "postgres://user:pass@localhost:5432/mydb?sslmode=disable"
-	db, err := sql.Open("postgres", dsn)
+	dsn := os.Getenv("DB_URL")
+
+	dbPost, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("db connection failed: %w", err)
 	}
-	return db, nil
+
+	dbConn := db.New(dbPost)
+
+	return dbConn, nil
 }
