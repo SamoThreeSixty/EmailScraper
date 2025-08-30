@@ -1,4 +1,4 @@
-package imap
+package imap_init
 
 import (
 	"github.com/emersion/go-imap"
@@ -31,10 +31,11 @@ func FetchLastUnseen(c *client.Client, inbox string, limit int) ([]*imap.Message
 	seqset.AddNum(ids...)
 
 	messages := make(chan *imap.Message, 10)
+	items := []imap.FetchItem{imap.FetchEnvelope, imap.FetchRFC822}
 	done := make(chan error, 1)
 
 	go func() {
-		done <- c.Fetch(seqset, []imap.FetchItem{imap.FetchEnvelope}, messages)
+		done <- c.Fetch(seqset, items, messages)
 	}()
 
 	var result []*imap.Message
