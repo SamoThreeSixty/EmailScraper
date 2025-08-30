@@ -2,7 +2,7 @@ package format
 
 import "github.com/emersion/go-imap"
 
-func FormatEmailAddressList(list []*imap.Address) string {
+func EmailAddressList(list []*imap.Address) string {
 	var result string
 	for i, addr := range list {
 		if i > 0 {
