@@ -11,6 +11,7 @@ import (
 	"github.com/samothreesixty/EmailScraper/internal/config"
 	"github.com/samothreesixty/EmailScraper/internal/db"
 	"github.com/samothreesixty/EmailScraper/internal/imapclient"
+	"github.com/samothreesixty/EmailScraper/internal/utils/format"
 )
 
 func main() {
@@ -59,8 +60,8 @@ func main() {
 
 		err := dbConn.InsertEmail(context.Background(), db.InsertEmailParams{
 			Subject:   msg.Envelope.Subject,
-			FromEmail: formatAddressList(msg.Envelope.From),
-			ToEmail:   formatAddressList(msg.Envelope.To),
+			FromEmail: format.FormatEmailAddressList(msg.Envelope.From),
+			ToEmail:   format.FormatEmailAddressList(msg.Envelope.To),
 			DateSent:  msg.Envelope.Date,
 			Body:      body,
 			CreatedAt: time.Now(),
@@ -70,15 +71,4 @@ func main() {
 			return
 		}
 	}
-}
-
-func formatAddressList(list []*imap.Address) string {
-	var result string
-	for i, addr := range list {
-		if i > 0 {
-			result += ", "
-		}
-		result += addr.MailboxName + "@" + addr.HostName
-	}
-	return result
 }
