@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/emersion/go-imap v1.2.1
+	github.com/go-chi/chi v1.5.5
 	github.com/jhillyerd/enmime v1.3.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
