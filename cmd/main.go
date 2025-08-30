@@ -10,7 +10,7 @@ import (
 	"github.com/jhillyerd/enmime"
 	"github.com/samothreesixty/EmailScraper/internal/config"
 	"github.com/samothreesixty/EmailScraper/internal/db"
-	"github.com/samothreesixty/EmailScraper/internal/imap_init"
+	"github.com/samothreesixty/EmailScraper/internal/imapclient"
 )
 
 func main() {
@@ -25,14 +25,14 @@ func main() {
 	}
 
 	fmt.Println("Connecting to server...")
-	c, err := imap_init.Connect(conf.Host, conf.Port, conf.Username, conf.Password)
+	c, err := imapclient.Connect(conf.Host, conf.Port, conf.Username, conf.Password)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer c.Logout()
 	fmt.Println("Connected and logged in!")
 
-	messages, err := imap_init.FetchLastUnseen(c, conf.Inbox, 4)
+	messages, err := imapclient.FetchLastUnseen(c, conf.Inbox, 4)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,4 +1,4 @@
-package imap_init
+package imapclient
 
 import (
 	"github.com/emersion/go-imap"
