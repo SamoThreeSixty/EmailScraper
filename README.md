@@ -7,8 +7,10 @@ This service can then be used within other applications to provide an interface 
 
 ## Tasks
 
-- [x] Create a service that can connect to an email service
-- [x] Periodically scrape for new emails
-- [x] Download attachments
+- [x] ~~Create a service that can connect to an email service~~
+- [x] ~~Periodically scrape for new emails~~
+- [x] ~~Download attachments~~
 - [ ] Check for security threats
-- [ ] API for displaying emails
+- [x] ~~API for displaying emails~~
+- [ ] Display inline images in emails
+- [ ] Download attachments
