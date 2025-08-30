@@ -1,4 +1,4 @@
-package imap
+package imap_init
 
 import (
 	"fmt"
