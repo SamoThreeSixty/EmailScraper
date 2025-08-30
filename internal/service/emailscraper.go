@@ -40,11 +40,6 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 			continue
 		}
 
-		if len(ids) == 0 {
-			fmt.Println("No new emails")
-			continue
-		}
-
 		fmt.Println("Found", len(ids), "new emails")
 
 		// Add the IDs of the found emails to the sequence set for fetching

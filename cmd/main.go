@@ -10,6 +10,7 @@ import (
 	"github.com/samothreesixty/EmailScraper/internal/api"
 	"github.com/samothreesixty/EmailScraper/internal/config"
 	"github.com/samothreesixty/EmailScraper/internal/imapclient"
+	"github.com/samothreesixty/EmailScraper/internal/service"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 	defer c.Logout()
 	fmt.Println("Connected and logged in!")
 
-	//go service.StartEmailScraper(5, c, dbConn)
+	go service.StartEmailScraper(5, c, dbConn)
 	api.InitAPI(dbConn)
 	go api.StartAPIService()
 
