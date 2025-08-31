@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi"
+	"github.com/samothreesixty/EmailScraper/internal/db"
 	"github.com/samothreesixty/EmailScraper/internal/models"
 	"github.com/samothreesixty/EmailScraper/internal/repository"
 )
@@ -77,10 +78,18 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 
 	bodyWithImages := replaceCidImages(email.HtmlBody, attachments)
 
+	// Create a new slice of attachments that only contains the ones that are downloadable
+	downloadableAttachments := make([]db.Attachment, 0, len(attachments))
+	for _, att := range attachments {
+		if !att.Cid.Valid {
+			downloadableAttachments = append(downloadableAttachments, att)
+		}
+	}
+
 	emailWithAttachments := EmailWithAttachments{
 		Email:       models.ReturnEmailToEmail(email),
 		BodyHtml:    template.HTML(bodyWithImages),
-		Attachments: models.ReturnAttachmentsFromAttachments(attachments),
+		Attachments: models.ReturnAttachmentsFromAttachments(downloadableAttachments),
 	}
 
 	ReturnView(w, "templates/email.html", emailWithAttachments)
