@@ -75,9 +75,11 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 		attachments[i].Path = strings.ReplaceAll(attachments[i].Path, "\\", "/")
 	}
 
+	bodyWithImages := replaceCidImages(email.HtmlBody, attachments)
+
 	emailWithAttachments := EmailWithAttachments{
 		Email:       email,
-		BodyHtml:    template.HTML(email.HtmlBody),
+		BodyHtml:    template.HTML(bodyWithImages),
 		Attachments: attachments,
 	}
 
