@@ -1,7 +1,7 @@
 -- +goose Up
 
 ALTER TABLE email RENAME COLUMN body TO html_body;
-ALTER TABLE email ADD COLUMN text_body TEXT;
+ALTER TABLE email ADD COLUMN text_body TEXT NOT NULL DEFAULT '';
 ALTER TABLE email DROP COLUMN created_at;
 ALTER TABLE email ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT NOW();
 

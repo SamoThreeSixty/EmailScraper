@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -45,7 +44,7 @@ type InsertEmailParams struct {
 	ToEmail   string
 	DateSent  time.Time
 	HtmlBody  string
-	TextBody  sql.NullString
+	TextBody  string
 }
 
 func (q *Queries) InsertEmail(ctx context.Context, arg InsertEmailParams) (Email, error) {
