@@ -71,7 +71,7 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 
 	emailWithAttachments := EmailWithAttachments{
 		Email:       email,
-		BodyHtml:    template.HTML(email.Body),
+		BodyHtml:    template.HTML(email.HtmlBody),
 		Attachments: attachments,
 	}
 

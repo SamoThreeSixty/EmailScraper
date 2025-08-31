@@ -119,7 +119,11 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 }
 
 func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx context.Context) (contentId, fileName string) {
-	filePath := filepath2.Join(attachmentDir, att.FileName)
+	// Make a safe filename for storage
+	timestamp := time.Now().Format("20060102150405")
+	fileName = fmt.Sprintf("%s_%s", timestamp, att.FileName)
+
+	filePath := filepath2.Join(attachmentDir, fileName)
 	err := os.WriteFile(filePath, att.Content, 0644)
 	if err != nil {
 		log.Println("Failed to save attachment:", err)
@@ -128,8 +132,8 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 	_, err = query.SaveAttachment(cx, db.SaveAttachmentParams{
 		EmailID:  email.ID,
 		Type:     att.ContentType,
-		Filename: att.FileName,
-		Path:     absPath,
+		Filename: fileName,
+		Path:     filePath,
 	})
 	if err != nil {
 		log.Println("Failed to save attachment:", err)
@@ -137,5 +141,5 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 		fmt.Println("Attachment saved at:", absPath)
 	}
 
-	return att.ContentID, att.FileName
+	return att.ContentID, fileName
 }
