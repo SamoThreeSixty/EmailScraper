@@ -8,7 +8,8 @@ CREATE TABLE attachments
     type              VARCHAR(255)                  NOT NULL,
     original_filename VARCHAR(255)                  NOT NULL,
     saved_filename    VARCHAR(255)                  NOT NULL,
-    path              VARCHAR(255)                  NOT NULL
+    path              VARCHAR(255)                  NOT NULL,
+    cid               VARCHAR(255)                  DEFAULT NULL
 );
 
 -- +goose DOWN

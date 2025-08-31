@@ -5,6 +5,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type Attachment struct {
 	OriginalFilename string
 	SavedFilename    string
 	Path             string
+	Cid              sql.NullString
 }
 
 type Email struct {
