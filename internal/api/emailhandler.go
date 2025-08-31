@@ -57,14 +57,14 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch email
-	email, err := repository.GetEmail(dbConn, context.Background(), int32(emailID))
+	email, err := dbConn.GetEmail(context.Background(), int32(emailID))
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	// Fetch attachments
-	attachments, err := repository.GetEmailAttachments(dbConn, int(email.ID))
+	attachments, err := dbConn.GetEmailAttachments(context.Background(), email.ID)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -78,9 +78,9 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 	bodyWithImages := replaceCidImages(email.HtmlBody, attachments)
 
 	emailWithAttachments := EmailWithAttachments{
-		Email:       email,
+		Email:       models.ReturnEmailToEmail(email),
 		BodyHtml:    template.HTML(bodyWithImages),
-		Attachments: attachments,
+		Attachments: models.ReturnAttachmentsFromAttachments(attachments),
 	}
 
 	ReturnView(w, "templates/email.html", emailWithAttachments)

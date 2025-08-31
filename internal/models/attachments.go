@@ -1,6 +1,8 @@
 package models
 
-import "github.com/samothreesixty/EmailScraper/internal/db"
+import (
+	"github.com/samothreesixty/EmailScraper/internal/db"
+)
 
 type Attachment struct {
 	Type             string `json:"type"`

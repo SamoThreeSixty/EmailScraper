@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	filepath2 "path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/emersion/go-imap"
@@ -61,7 +61,6 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 
 		for msg := range messages {
 			section := imap.BodySectionName{}
-			var body string
 			r := msg.GetBody(&section)
 			if r != nil {
 				env, err := enmime.ReadEnvelope(r)
@@ -96,16 +95,11 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 					log.Fatal("Failed to create attachment directory:", err)
 				}
 
-				// Save the attachments
-				for _, att := range env.Attachments {
+				allAttachments := collectAttachments(env.Root)
+				fmt.Println("Total attachments:", len(allAttachments))
+
+				for _, att := range allAttachments {
 					_, _ = saveAttachments(query, email, att, cx)
-				}
-
-				// Save the inline attachments
-				for _, att := range env.Inlines {
-					contentId, filename := saveAttachments(query, email, att, cx)
-
-					body = strings.ReplaceAll(body, "cid:"+contentId, "attachments/"+filename)
 				}
 
 			}
@@ -117,6 +111,22 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 			log.Println("Fetch error:", err)
 		}
 	}
+}
+
+func collectAttachments(part *enmime.Part) []*enmime.Part {
+	var atts []*enmime.Part
+
+	// If this part has a filename or Content-ID, treat as attachment
+	if part.FileName != "" || part.ContentID != "" {
+		atts = append(atts, part)
+	}
+
+	// Recursively walk children via FirstChild / NextSibling
+	for child := part.FirstChild; child != nil; child = child.NextSibling {
+		atts = append(atts, collectAttachments(child)...)
+	}
+
+	return atts
 }
 
 func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx context.Context) (contentId, fileName string) {
@@ -131,6 +141,7 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 		OriginalFilename: att.FileName,
 		SavedFilename:    "", // placeholder
 		Path:             "", // placeholder
+		Cid:              sql.NullString{String: att.ContentID, Valid: att.ContentID != ""},
 	})
 	if err != nil {
 		log.Println("Failed to save attachment into database:", err)
