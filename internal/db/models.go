@@ -9,20 +9,22 @@ import (
 )
 
 type Attachment struct {
-	ID       int32
-	EmailID  int32
-	Type     string
-	Filename string
-	Path     string
+	ID               int32
+	EmailID          int32
+	CreatedAt        time.Time
+	Type             string
+	OriginalFilename string
+	SavedFilename    string
+	Path             string
 }
 
 type Email struct {
 	ID        int32
+	CreatedAt time.Time
 	Subject   string
 	FromEmail string
 	ToEmail   string
 	DateSent  time.Time
 	HtmlBody  string
 	TextBody  string
-	CreatedAt time.Time
 }

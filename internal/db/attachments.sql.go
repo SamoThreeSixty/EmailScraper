@@ -10,7 +10,7 @@ import (
 )
 
 const getEmailAttachments = `-- name: GetEmailAttachments :many
-SELECT id, email_id, type, filename, path FROM attachments WHERE email_id = $1
+SELECT id, email_id, created_at, type, original_filename, saved_filename, path FROM attachments WHERE email_id = $1
 `
 
 func (q *Queries) GetEmailAttachments(ctx context.Context, emailID int32) ([]Attachment, error) {
@@ -25,8 +25,10 @@ func (q *Queries) GetEmailAttachments(ctx context.Context, emailID int32) ([]Att
 		if err := rows.Scan(
 			&i.ID,
 			&i.EmailID,
+			&i.CreatedAt,
 			&i.Type,
-			&i.Filename,
+			&i.OriginalFilename,
+			&i.SavedFilename,
 			&i.Path,
 		); err != nil {
 			return nil, err
@@ -43,31 +45,35 @@ func (q *Queries) GetEmailAttachments(ctx context.Context, emailID int32) ([]Att
 }
 
 const saveAttachment = `-- name: SaveAttachment :one
-INSERT INTO attachments (email_id, type, filename, path)
-VALUES ($1, $2, $3, $4)
-RETURNING id, email_id, type, filename, path
+INSERT INTO attachments (email_id, created_at, type, original_filename, saved_filename, path)
+VALUES ($1, NOW(), $2, $3, $4, $5)
+RETURNING id, email_id, created_at, type, original_filename, saved_filename, path
 `
 
 type SaveAttachmentParams struct {
-	EmailID  int32
-	Type     string
-	Filename string
-	Path     string
+	EmailID          int32
+	Type             string
+	OriginalFilename string
+	SavedFilename    string
+	Path             string
 }
 
 func (q *Queries) SaveAttachment(ctx context.Context, arg SaveAttachmentParams) (Attachment, error) {
 	row := q.db.QueryRowContext(ctx, saveAttachment,
 		arg.EmailID,
 		arg.Type,
-		arg.Filename,
+		arg.OriginalFilename,
+		arg.SavedFilename,
 		arg.Path,
 	)
 	var i Attachment
 	err := row.Scan(
 		&i.ID,
 		&i.EmailID,
+		&i.CreatedAt,
 		&i.Type,
-		&i.Filename,
+		&i.OriginalFilename,
+		&i.SavedFilename,
 		&i.Path,
 	)
 	return i, err
