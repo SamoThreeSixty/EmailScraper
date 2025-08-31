@@ -78,3 +78,24 @@ func (q *Queries) SaveAttachment(ctx context.Context, arg SaveAttachmentParams) 
 	)
 	return i, err
 }
+
+const updateAttachmentPathFilenames = `-- name: UpdateAttachmentPathFilenames :exec
+UPDATE attachments SET path = $1, saved_filename = $2, original_filename = $3 WHERE id = $4
+`
+
+type UpdateAttachmentPathFilenamesParams struct {
+	Path             string
+	SavedFilename    string
+	OriginalFilename string
+	ID               int32
+}
+
+func (q *Queries) UpdateAttachmentPathFilenames(ctx context.Context, arg UpdateAttachmentPathFilenamesParams) error {
+	_, err := q.db.ExecContext(ctx, updateAttachmentPathFilenames,
+		arg.Path,
+		arg.SavedFilename,
+		arg.OriginalFilename,
+		arg.ID,
+	)
+	return err
+}

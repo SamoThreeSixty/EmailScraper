@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	filepath2 "path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -123,23 +124,44 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 	timestamp := time.Now().Format("20060102150405")
 	fileName = fmt.Sprintf("%s_%s", timestamp, att.FileName)
 
-	filePath := filepath2.Join(attachmentDir, fileName)
-	err := os.WriteFile(filePath, att.Content, 0644)
+	// Save the file into the database
+	attDb, err := query.SaveAttachment(cx, db.SaveAttachmentParams{
+		EmailID:          email.ID,
+		Type:             att.ContentType,
+		OriginalFilename: att.FileName,
+		SavedFilename:    "", // placeholder
+		Path:             "", // placeholder
+	})
+	if err != nil {
+		log.Println("Failed to save attachment into database:", err)
+	}
+
+	// Make sure that there is an adequate folder for the attachments
+	year := time.Now().Format("2006")
+	month := time.Now().Format("01")
+	day := time.Now().Format("02")
+	emailIDStr := strconv.FormatInt(int64(email.ID), 10)
+
+	err = os.MkdirAll(filepath2.Join(attachmentDir, year, month, day, emailIDStr), 0755)
+	if err != nil {
+		log.Fatal("Failed to create attachment directory:", err)
+	}
+
+	filePath := filepath2.Join(attachmentDir, year, month, day, emailIDStr, fileName)
+	err = os.WriteFile(filePath, att.Content, 0644)
 	if err != nil {
 		log.Println("Failed to save attachment:", err)
 	}
 
-	_, err = query.SaveAttachment(cx, db.SaveAttachmentParams{
-		EmailID:          email.ID,
-		Type:             att.ContentType,
-		OriginalFilename: att.FileName,
-		SavedFilename:    fileName,
+	// Save the file path into the database
+	err = query.UpdateAttachmentPathFilenames(cx, db.UpdateAttachmentPathFilenamesParams{
+		ID:               attDb.ID,
 		Path:             filePath,
+		SavedFilename:    fileName,
+		OriginalFilename: att.FileName,
 	})
 	if err != nil {
-		log.Println("Failed to save attachment:", err)
-	} else {
-		fmt.Println("Attachment saved at:", filePath)
+		log.Println("Failed to save attachment path and filename into database:", err)
 	}
 
 	return att.ContentID, fileName

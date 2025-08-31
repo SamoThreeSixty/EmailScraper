@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/samothreesixty/EmailScraper/internal/models"
@@ -67,6 +68,11 @@ func GetEmailView(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	// Replace backslashes with forward slashes
+	for i := range attachments {
+		attachments[i].Path = strings.ReplaceAll(attachments[i].Path, "\\", "/")
 	}
 
 	emailWithAttachments := EmailWithAttachments{
