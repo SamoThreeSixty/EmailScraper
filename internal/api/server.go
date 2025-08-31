@@ -23,7 +23,7 @@ func StartAPIService() {
 	r.Get("/api/v1/email/{id}/data", GetEmail)
 	r.Get("/api/v1/emails", GetEmails)
 
-	r.Handle("/attachments/*", http.StripPrefix("/attachments/", http.FileServer(http.Dir("./attachments"))))
+	r.Get("/{baseFolderPath}/{year}/{month}/{day}/{emailId}/{savedFilename}", AttachmentHandler)
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {

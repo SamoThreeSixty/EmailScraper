@@ -14,7 +14,7 @@
 <h2>Attachments</h2>
 <ul>
     {{range .Attachments}}
-    <li><a href="/attachments/{{.Filename}}" target="_blank">{{.Filename}}</a> ({{.Type}})</li>
+    <li><a href="http://localhost:8080/{{.Path}}" target="_blank">{{.OriginalFilename}}</a> ({{.Type}})</li>
     {{else}}
     <li>No attachments</li>
     {{end}}
