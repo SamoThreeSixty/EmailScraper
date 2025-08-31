@@ -5,6 +5,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -22,6 +23,7 @@ type Email struct {
 	FromEmail string
 	ToEmail   string
 	DateSent  time.Time
-	Body      string
+	HtmlBody  string
+	TextBody  sql.NullString
 	CreatedAt time.Time
 }

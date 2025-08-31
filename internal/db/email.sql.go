@@ -7,11 +7,12 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
 const getEmail = `-- name: GetEmail :one
-SELECT id, subject, from_email, to_email, date_sent, body, created_at
+SELECT id, subject, from_email, to_email, date_sent, html_body, text_body, created_at
 FROM email
 WHERE id = $1
 `
@@ -25,16 +26,17 @@ func (q *Queries) GetEmail(ctx context.Context, id int32) (Email, error) {
 		&i.FromEmail,
 		&i.ToEmail,
 		&i.DateSent,
-		&i.Body,
+		&i.HtmlBody,
+		&i.TextBody,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const insertEmail = `-- name: InsertEmail :one
-INSERT INTO email (subject, from_email, to_email, date_sent, body, created_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, subject, from_email, to_email, date_sent, body, created_at
+INSERT INTO email (subject, from_email, to_email, date_sent, html_body, text_body, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, NOW())
+RETURNING id, subject, from_email, to_email, date_sent, html_body, text_body, created_at
 `
 
 type InsertEmailParams struct {
@@ -42,8 +44,8 @@ type InsertEmailParams struct {
 	FromEmail string
 	ToEmail   string
 	DateSent  time.Time
-	Body      string
-	CreatedAt time.Time
+	HtmlBody  string
+	TextBody  sql.NullString
 }
 
 func (q *Queries) InsertEmail(ctx context.Context, arg InsertEmailParams) (Email, error) {
@@ -52,8 +54,8 @@ func (q *Queries) InsertEmail(ctx context.Context, arg InsertEmailParams) (Email
 		arg.FromEmail,
 		arg.ToEmail,
 		arg.DateSent,
-		arg.Body,
-		arg.CreatedAt,
+		arg.HtmlBody,
+		arg.TextBody,
 	)
 	var i Email
 	err := row.Scan(
@@ -62,7 +64,8 @@ func (q *Queries) InsertEmail(ctx context.Context, arg InsertEmailParams) (Email
 		&i.FromEmail,
 		&i.ToEmail,
 		&i.DateSent,
-		&i.Body,
+		&i.HtmlBody,
+		&i.TextBody,
 		&i.CreatedAt,
 	)
 	return i, err
