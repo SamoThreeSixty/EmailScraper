@@ -128,17 +128,18 @@ func saveAttachments(query *db.Queries, email db.Email, att *enmime.Part, cx con
 	if err != nil {
 		log.Println("Failed to save attachment:", err)
 	}
-	absPath, _ := filepath2.Abs(filePath)
+
 	_, err = query.SaveAttachment(cx, db.SaveAttachmentParams{
-		EmailID:  email.ID,
-		Type:     att.ContentType,
-		Filename: fileName,
-		Path:     filePath,
+		EmailID:          email.ID,
+		Type:             att.ContentType,
+		OriginalFilename: att.FileName,
+		SavedFilename:    fileName,
+		Path:             filePath,
 	})
 	if err != nil {
 		log.Println("Failed to save attachment:", err)
 	} else {
-		fmt.Println("Attachment saved at:", absPath)
+		fmt.Println("Attachment saved at:", filePath)
 	}
 
 	return att.ContentID, fileName

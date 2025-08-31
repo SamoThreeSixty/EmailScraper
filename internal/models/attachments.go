@@ -3,16 +3,18 @@ package models
 import "github.com/samothreesixty/EmailScraper/internal/db"
 
 type Attachment struct {
-	Type     string `json:"type"`
-	Filename string `json:"filename"`
-	Path     string `json:"path"`
+	Type             string `json:"type"`
+	OriginalFilename string `json:"original_filename"`
+	SavedFilename    string `json:"saved_filename"`
+	Path             string `json:"path"`
 }
 
 func ReturnAttachmentFromAttachment(attachment db.Attachment) Attachment {
 	return Attachment{
-		Type:     attachment.Type,
-		Filename: attachment.Filename,
-		Path:     attachment.Path,
+		Type:             attachment.Type,
+		OriginalFilename: attachment.OriginalFilename,
+		SavedFilename:    attachment.SavedFilename,
+		Path:             attachment.Path,
 	}
 }
 
