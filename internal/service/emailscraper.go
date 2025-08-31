@@ -66,8 +66,12 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 				env, err := enmime.ReadEnvelope(r)
 				if err != nil {
 					log.Println("Failed to parse MIME:", err)
-				} else {
-					body = env.HTML
+				}
+
+				var htmlBody, txtBody string
+				if env != nil {
+					htmlBody = env.HTML
+					txtBody = env.Text
 				}
 
 				// Save the email into the database
@@ -76,8 +80,8 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 					FromEmail: format.EmailAddressList(msg.Envelope.From),
 					ToEmail:   format.EmailAddressList(msg.Envelope.To),
 					DateSent:  msg.Envelope.Date,
-					Body:      body,
-					CreatedAt: time.Now(),
+					HtmlBody:  htmlBody,
+					TextBody:  txtBody,
 				})
 				if err != nil {
 					log.Println("Failed to insert email:", err)

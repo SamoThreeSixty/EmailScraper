@@ -12,7 +12,8 @@ type Email struct {
 	FromEmail string    `json:"from_email"`
 	ToEmail   string    `json:"to_email"`
 	DateSent  time.Time `json:"date_sent"`
-	Body      string    `json:"body"`
+	HtmlBody  string    `json:"html_body"`
+	TextBody  string    `json:"text_body"`
 }
 
 func ReturnEmailToEmail(email db.Email) Email {
@@ -22,6 +23,7 @@ func ReturnEmailToEmail(email db.Email) Email {
 		FromEmail: email.FromEmail,
 		ToEmail:   email.ToEmail,
 		DateSent:  email.DateSent,
-		Body:      email.Body,
+		HtmlBody:  email.HtmlBody,
+		TextBody:  email.TextBody,
 	}
 }
