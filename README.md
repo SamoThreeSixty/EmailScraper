@@ -12,5 +12,13 @@ This service can then be used within other applications to provide an interface 
 - [x] ~~Download attachments~~
 - [ ] Check for security threats
 - [x] ~~API for displaying emails~~
-- [ ] Display inline images in emails
-- [ ] Download attachments
+- [x] ~~Display inline images in emails~~
+- [x] ~~Download attachments~~
+
+## Tested email services
+
+- [x] Gmail
+- [ ] Yahoo
+- [ ] Outlook
+- [ ] Hotmail
+- [ ] AOL
