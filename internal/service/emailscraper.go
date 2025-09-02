@@ -28,7 +28,7 @@ func StartEmailScraper(secondInterval int, c *client.Client, query *db.Queries) 
 		// Search for new/unseen emails since the last interval
 		criteria := imap.NewSearchCriteria()
 		criteria.WithoutFlags = []string{"\\Seen"}
-		criteria.Since = time.Now().Add(-24 * time.Second)
+		criteria.Since = time.Now().Add(-24 * time.Hour)
 
 		// Make sure the inbox is selected
 		_, err := c.Select("INBOX", false)

@@ -25,13 +25,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	client := &imapclient.GmailClient{
+		Config: conf,
+	}
+
 	// Start the IMAP client
 	fmt.Println("Connecting to server...")
-	c, err := imapclient.Connect(conf.Host, conf.Port, conf.Username, conf.Password)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer c.Logout()
+
+	client.Connect()
+	client.Login("")
+	c := client.GetClient()
+
 	fmt.Println("Connected and logged in!")
 
 	go service.StartEmailScraper(5, c, dbConn)
