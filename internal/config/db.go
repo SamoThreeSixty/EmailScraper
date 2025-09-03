@@ -23,6 +23,11 @@ func Connect() (*db.Queries, error) {
 		return nil, fmt.Errorf("db connection failed: %w", err)
 	}
 
+	// Test the connection
+	if err := dbPost.Ping(); err != nil {
+		return nil, fmt.Errorf("db unreachable: %w", err)
+	}
+
 	dbConn := db.New(dbPost)
 
 	return dbConn, nil
