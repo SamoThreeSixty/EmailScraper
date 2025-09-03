@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -14,29 +13,16 @@ import (
 )
 
 func main() {
-	conf, err := config.NewConfig()
-	if err != nil || conf == nil {
-		log.Fatal(err)
-	}
-
 	// Open the database connection
 	dbConn, err := config.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client := &imapclient.GmailClient{
-		Config: conf,
+	c, err := imapclient.NewGmailClient()
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	// Start the IMAP client
-	fmt.Println("Connecting to server...")
-
-	client.Connect()
-	client.Login("")
-	c := client.GetClient()
-
-	fmt.Println("Connected and logged in!")
 
 	go service.StartEmailScraper(5, c, dbConn)
 	api.InitAPI(dbConn)
